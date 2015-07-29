@@ -12,6 +12,7 @@ import com.onresolve.scriptrunner.runner.customisers.WithPlugin
 
 // Agile board ID
 def rapidBoardId = 504
+def excludeTypes = ["Epic"]
 
 @WithPlugin("com.pyxis.greenhopper.jira")
 
@@ -28,6 +29,11 @@ SprintIssueService sprintIssueService
 SprintManager sprintManager
 
 Issue issue = issue // provided in binding
+
+def String issueTypeName = issue.getIssueTypeObject().getName()
+if (issueTypeName in excludeTypes) {
+    return
+}
 
 def User loggedInUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
 def view = rapidViewService.getRapidView(loggedInUser, rapidBoardId).getValue()
