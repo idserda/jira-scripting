@@ -1,12 +1,12 @@
 package nl.topicus.jira
 
-import com.atlassian.crowd.model.user.User
 import com.atlassian.greenhopper.service.rapid.view.RapidViewService
 import com.atlassian.greenhopper.service.sprint.SprintIssueService
 import com.atlassian.greenhopper.service.sprint.SprintManager
 import com.atlassian.greenhopper.service.sprint.SprintService
 import com.atlassian.jira.component.ComponentAccessor
 import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.user.ApplicationUser
 import com.onresolve.scriptrunner.runner.customisers.JiraAgileBean
 import com.onresolve.scriptrunner.runner.customisers.WithPlugin
 
@@ -34,8 +34,7 @@ def String issueTypeName = issue.getIssueTypeObject().getName()
 if (issueTypeName in excludeTypes) {
     return
 }
-
-def User loggedInUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+def ApplicationUser loggedInUser = ComponentAccessor.getJiraAuthenticationContext().getUser()
 def view = rapidViewService.getRapidView(loggedInUser, rapidBoardId).getValue()
 
 if (! view) {
@@ -46,5 +45,5 @@ def sprintsInView = sprintManager.getSprintsForView(view).getValue()
 def huidigeSprint = sprintsInView.find { it.active }
 
 if (huidigeSprint) {
-    sprintIssueService.addIssuesToSprint(loggedInUser, huidigeSprint, [issue])
+    sprintIssueService.moveIssuesToSprint(loggedInUser, huidigeSprint, [issue])
 }
